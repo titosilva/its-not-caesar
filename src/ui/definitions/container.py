@@ -15,6 +15,8 @@ class Container(Renderable):
             'max-height': None,
             'min-width': None,
             'min-height': None,
+            'vertical-align': 'start',
+            'horizontal-align': 'start',
         }
 
         for config_key in default_configs.keys():
@@ -45,6 +47,11 @@ class Container(Renderable):
         for element in self.__elements_depth_ordered:
             current_render = self.__add_element_to_render(element, current_render)
 
+        current_render = self.__pad_lines(current_render)
+        current_render = self.__add_borders(current_render)
+        return current_render
+
+    def __pad_lines(self, current_render: List[str]) -> List[str]:
         # Pad all lines to get the same size
         expected_size = self.__get_render_sizes(current_render)
         width = expected_size[0]
@@ -70,15 +77,28 @@ class Container(Renderable):
                 max_height -= 2
             height = min(height, max_height)
 
+        vertical_align = self.__configs['vertical-align']
+        horizontal_align = self.__configs['horizontal-align']
+
+        vertical_base = max(0 if vertical_align != 'center' else (height - len(current_render)) // 2, 0)
+
+        padded_render = list()
         for line_idx in range(0, height):
-            if line_idx >= len(current_render):
-                current_render.append('')
+            if line_idx < vertical_base or line_idx - vertical_base >= len(current_render):
+                padded_render.append(' ' * width)
+                continue
 
-            current_render_line = current_render[line_idx]
-            current_render_line += ' ' * (width - len(current_render_line))
-            current_render[line_idx] = current_render_line
+            if line_idx >= len(padded_render):
+                padded_render.append('')
 
-        current_render = self.__add_borders(current_render)
+            current_render_line = current_render[line_idx - vertical_base]
+            horizontal_base = max(0 if horizontal_align != 'center' else (width - len(current_render_line)) // 2, 0)
+
+            padded_render_line = ' ' * horizontal_base + current_render_line
+            padded_render_line += ' ' * (width - len(padded_render_line))
+            padded_render[line_idx] = padded_render_line
+
+        current_render = padded_render
         return current_render
 
     def __get_render_sizes(self, current_render: List[str]) -> Tuple[int, int]:

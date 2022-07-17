@@ -6,9 +6,16 @@ if __name__ == "__main__":
     screen = ShellScreen()
 
     screen_size = screen.get_size()
+    screen_container_config = {
+        'border': True, 
+        'height': screen_size[0], 
+        'width': screen_size[1], 
+        'vertical-align': 'center', 
+        'horizontal-align': 'center'
+    }
     
     content = \
-    Container(configs={'border': True, 'height': screen_size[0], 'width': screen_size[1]}) \
+    Container(configs=screen_container_config) \
         % Paragraph('OK') \
         % Paragraph('Batata')
 
