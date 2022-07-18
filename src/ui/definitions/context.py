@@ -37,9 +37,12 @@ class UIContext:
 
                 listener.stop()
                 listener.join()
+
+            print("Goodbye! 'u'")
         except Exception as e:
             print(f"Error: {e}")
         except KeyboardInterrupt as e:
             print("Killed x_x")
         finally:
             system("stty echo")
+            
