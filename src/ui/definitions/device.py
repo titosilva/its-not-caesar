@@ -3,7 +3,7 @@ from typing import Tuple
 from ui.definitions.renderable import Renderable
 import os
 
-class Screen(ABC):
+class Device(ABC):
     @abstractmethod
     def draw(self, obj: Renderable):
         raise NotImplementedError()
@@ -16,7 +16,7 @@ class Screen(ABC):
     def clear(self):
         raise NotImplementedError()
 
-class ShellScreen(Screen):
+class Shell(Device):
     def draw(self, obj: Renderable):
         print('\n'.join(obj.render()), end='')
 

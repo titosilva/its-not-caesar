@@ -1,6 +1,6 @@
 from typing import Callable
 from ui.definitions.renderable import InteractionControl, Renderable
-from ui.definitions.screen import ShellScreen
+from ui.definitions.device import Shell
 from pynput.keyboard import Listener
 from os import system
 from time import sleep
@@ -12,7 +12,7 @@ class UIContext:
         }
 
         self.__interaction_control = InteractionControl(self.__signaling)
-        self.__screen = ShellScreen()
+        self.__screen = Shell()
 
     def get_control(self):
         return self.__interaction_control
@@ -45,4 +45,3 @@ class UIContext:
             print("Killed x_x")
         finally:
             system("stty echo")
-            
