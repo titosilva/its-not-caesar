@@ -9,3 +9,7 @@ class Paragraph(Renderable):
 
     def render(self) -> List[str]:
         return [self.__content]
+
+class Break(Paragraph):
+    def __init__(self, position: Position = None) -> None:
+        super().__init__('', position)

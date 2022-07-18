@@ -13,17 +13,16 @@ class Screen(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def clear_screen(self):
+    def clear(self):
         raise NotImplementedError()
 
 class ShellScreen(Screen):
     def draw(self, obj: Renderable):
-        for render_line in obj.render():
-            print(render_line)
+        print('\n'.join(obj.render()), end='')
 
     def get_size(self) -> Tuple[int, int]:
         size = os.get_terminal_size()
         return (size.lines, size.columns)
 
-    def clear_screen(self):
+    def clear(self):
         os.system('clear')

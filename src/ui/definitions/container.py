@@ -33,9 +33,10 @@ class Container(Renderable):
 
         self.__elements_depth_ordered = list()
     
-    def add_element(self, element: Renderable):
+    def add_element(self, element: Renderable) -> Any:
         self.__elements_depth_ordered.append(element)
         self.__elements_depth_ordered.sort(key=lambda e: e.get_position().depth)
+        return self
 
     def __mod__(self, other):
         self.add_element(other)
