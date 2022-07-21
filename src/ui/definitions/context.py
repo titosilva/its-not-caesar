@@ -1,9 +1,12 @@
 from typing import Callable
-from ui.definitions.renderable import InteractionControl, Renderable
+from ui.definitions.interactible import InteractionControl
+from ui.definitions.renderable import Renderable
 from ui.definitions.device import Shell
 from pynput.keyboard import Listener
 from os import system
 from time import sleep
+
+from ui.definitions.screen import Screen
 
 class UIContext:
     def __init__(self) -> None:
@@ -12,29 +15,25 @@ class UIContext:
         }
 
         self.__interaction_control = InteractionControl(self.__signaling)
-        self.__screen = Shell()
+        self.__device = Shell()
 
     def get_control(self):
         return self.__interaction_control
 
-    def get_screen(self):
-        return self.__screen
+    def get_device(self):
+        return self.__device
 
-    def set_ui_content(self, content):
-        self.__content = content
+    def set_screen(self, screen: Screen):
+        self.__screen = screen
 
     def launch(self):
         try:
             system("stty -echo")
 
+            self.__interaction_control.pass_control(self.__screen.get_content())
             with Listener(on_press=self.__interaction_control.handle_key) as listener:
                 while not self.__signaling['stop']:
-                    if callable(self.__content):
-                        self.__screen.draw(self.__content(self.__screen))
-                    else:
-                        self.__screen.draw(self.__content)
-                    sleep(0.2)
-
+                    sleep(1)
                 listener.stop()
                 listener.join()
 
