@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 from pynput.keyboard import Key
 
 from ui.definitions.renderable import Renderable
@@ -10,10 +10,17 @@ class InteractionControl:
         self.__context_signaling = context_signaling
         self.__controller = None
         self.key_to_handle = None
+        self.__on_control_passed = None
+
+    def set_on_control_passed(self, fn: Callable):
+        self.__on_control_passed = fn
 
     def pass_control(self, controller: Any):
         self.__controller = controller
         controller.take_control(self)
+        
+        if self.__controller == controller and callable(self.__on_control_passed):
+            self.__on_control_passed()
 
     def handle_key(self, key: Key):
         self.key_to_handle = key
