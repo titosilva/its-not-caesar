@@ -65,5 +65,4 @@ class InitialScreen(Screen):
         return str(self.__other_button_content)
 
     def draw(self):
-        self.__device.clear()
         self.__device.draw(self.content.render())

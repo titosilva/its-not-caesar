@@ -5,6 +5,8 @@ from ui.definitions.device import Shell
 from pynput.keyboard import Listener
 from os import system
 from time import sleep
+import termios
+import sys
 
 from ui.definitions.screen import Screen
 
@@ -29,7 +31,7 @@ class UIContext:
 
             with Listener(on_press=self.__interaction_control.handle_key) as listener:
                 while not self.__signaling['stop']:
-                    sleep(1)
+                    sleep(0.5)
                 listener.stop()
                 listener.join()
 
@@ -39,4 +41,5 @@ class UIContext:
         except KeyboardInterrupt as e:
             print("Killed x_x")
         finally:
+            termios.tcflush(sys.stdin, termios.TCIOFLUSH)
             system("stty echo")
