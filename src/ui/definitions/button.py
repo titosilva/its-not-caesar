@@ -14,6 +14,9 @@ class Button(Container):
     def render(self) -> List[str]:
         result = super().render()
 
+        if len(result) == 0:
+            return []
+
         if self.__interacting:   
             result[0] = '\033[38;5;10m' + result[0]
             result[-1] = result[-1] + '\033[38;5;15m'

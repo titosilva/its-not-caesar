@@ -110,6 +110,9 @@ class Container(Interactible):
         return current_render
 
     def __get_render_sizes(self, current_render: List[str]) -> Tuple[int, int]:
+        if len(current_render) == 0:
+            return (0, 0)
+
         max_row_len = max(map(lambda line: len(Utils.remove_escape_seqs(line)), current_render))
         return (max_row_len, len(current_render))
 
@@ -179,9 +182,9 @@ class Container(Interactible):
 
         if direction in ['up', 'down']:
             if direction == 'up':
-                filtered = list(filter(lambda e: e.get_position().row > current_row, interactibles))
-            else:
                 filtered = list(filter(lambda e: e.get_position().row < current_row, interactibles))
+            else:
+                filtered = list(filter(lambda e: e.get_position().row > current_row, interactibles))
 
             if len(filtered) == 0:
                 return None
@@ -220,6 +223,9 @@ class Container(Interactible):
             if self._parent is not None:
                 control.pass_control(self._parent, key_to_handle=key)
                 self.__interacting_element = None
+            elif self.__interacting_element is not None:
+                control.pass_control(self.__interacting_element)
+                
             return
 
         self.__interacting_element = next_element
@@ -231,12 +237,11 @@ class Container(Interactible):
         if len(interactibles) == 0:
             return
 
-        if len(interactibles) == 1:
+        if self.__interacting_element is None:
             self.__interacting_element = interactibles[0]
             control.pass_control(self.__interacting_element)
             return
 
-        self.__interacting_element = None
-        
-        
+        if control.key_to_handle is not None:
+            self.handle_key(control.key_to_handle, control)
         

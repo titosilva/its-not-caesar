@@ -9,12 +9,15 @@ class InteractionControl:
     def __init__(self, context_signaling: Dict[str, Any]) -> None:
         self.__context_signaling = context_signaling
         self.__controller = None
+        self.key_to_handle = None
 
-    def pass_control(self, controller: Any, key_to_handle: Key = None):
+    def pass_control(self, controller: Any):
         self.__controller = controller
         controller.take_control(self)
 
     def handle_key(self, key: Key):
+        self.key_to_handle = key
+
         if key == Key.esc:
             self.__context_signaling['stop'] = True
             return

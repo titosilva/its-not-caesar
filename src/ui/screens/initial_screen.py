@@ -13,6 +13,7 @@ class InitialScreen(Screen):
         control: InteractionControl = context.get_control()
 
         self.__button_content = 'ON'
+        self.__other_button_content = 0
         self.__device = device
 
         screen_size = device.get_size()
@@ -31,7 +32,11 @@ class InitialScreen(Screen):
             % Paragraph("It's not Caesar!") \
             % Paragraph("(Actually, it is Vigenère)") \
             % Break() \
-            % Button(on_press=self.toggle_button_content).add_element(Paragraph(self.get_button_content))
+            % Button(on_press=self.toggle_button_content) \
+                % Paragraph(self.get_button_content) \
+            % Button(on_press=self.change_other_button_content) \
+                % Paragraph(self.get_other_button_content)
+            
 
         control.pass_control(self.content)
         self.__device.clear()
@@ -48,8 +53,13 @@ class InitialScreen(Screen):
         self.__device.clear()
         self.__device.draw(self.content.render())
 
-    def set_context(self, context: Any) -> Renderable:
-        self.__context = context
+    def change_other_button_content(self):
+        self.__other_button_content += 1
+        self.__device.clear()
+        self.__device.draw(self.content.render())
 
     def get_button_content(self):
         return self.__button_content
+
+    def get_other_button_content(self):
+        return str(self.__other_button_content)
