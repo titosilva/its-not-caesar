@@ -18,12 +18,20 @@ class UIContext:
 
         self.__interaction_control = InteractionControl(self.__signaling)
         self.__device = Shell()
+        self.__screen = None
 
     def get_control(self):
         return self.__interaction_control
 
     def get_device(self):
         return self.__device
+
+    def set_screen(self, screen: Screen):
+        if self.__screen is not None:
+            self.__screen.stop()
+            
+        self.__screen = screen
+        self.__screen.start()
 
     def launch(self):
         try:
