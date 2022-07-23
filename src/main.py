@@ -3,5 +3,5 @@ from ui.screens.initial_screen import InitialScreen
 
 if __name__ == "__main__":
     context = UIContext()
-    context.set_screen(InitialScreen(context.get_device()))
+    InitialScreen(context)
     context.launch()

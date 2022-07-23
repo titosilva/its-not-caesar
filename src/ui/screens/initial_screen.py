@@ -1,4 +1,5 @@
-from typing import List
+from typing import Any, List
+from ui.definitions.interactible import InteractionControl
 from ui.definitions.renderable import Renderable
 from ui.definitions.screen import Screen
 from ui.definitions.button import Button
@@ -7,7 +8,10 @@ from ui.definitions.device import Device
 from ui.definitions.paragraph import Break, Paragraph
 
 class InitialScreen(Screen):
-    def __init__(self, device: Device) -> None:
+    def __init__(self, context: Any) -> None:
+        device: Device = context.get_device()
+        control: InteractionControl = context.get_control()
+
         self.__button_content = 'ON'
         self.__device = device
 
@@ -29,6 +33,7 @@ class InitialScreen(Screen):
             % Break() \
             % Button(on_press=self.toggle_button_content).add_element(Paragraph(self.get_button_content))
 
+        control.pass_control(self.content)
         self.__device.clear()
         self.__device.draw(self.content.render())
 
@@ -42,6 +47,9 @@ class InitialScreen(Screen):
         self.__button_content = 'OFF' if self.__button_content == 'ON' else 'ON'
         self.__device.clear()
         self.__device.draw(self.content.render())
+
+    def set_context(self, context: Any) -> Renderable:
+        self.__context = context
 
     def get_button_content(self):
         return self.__button_content
