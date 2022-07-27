@@ -140,6 +140,12 @@ class Container(Interactible):
     def __add_element_to_render(self, element: Renderable, current_render: List[str]) -> List[str]:
         if self.__configs['flex'] == 'column':
             element.set_position(Position(len(current_render), element.get_position().col))
+        if self.__configs['flex'] == 'row':
+            element.set_position(
+                Position(
+                    element.get_position().row, max(lambda line: len(line), current_render)
+                )
+            )
 
         element_rendered = element.render()
         element_position = element.get_position()

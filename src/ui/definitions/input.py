@@ -30,17 +30,17 @@ class Input(Interactible):
         })
 
         if len(text_content) >= text_width * text_height:
-            text_content = '…' + text_content[1:]
-
             if self.__interacting:
-                text_content = text_content[:-1]
+                text_content = text_content[1:]
+
+            text_content = '…' + text_content[1:]
 
         row = 0
         while row < text_height:
             limits = (text_width * row, text_width * (row + 1)) 
             line_text = text_content[limits[0]:limits[1]]
 
-            if limits[0] <= len(text_content) and limits[1] >= len(text_content):
+            if limits[0] <= len(text_content) and limits[1] > len(text_content):
                 if self.__interacting:
                     line_text += Utils.set_green('_')
                 else:
