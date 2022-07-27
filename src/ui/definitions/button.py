@@ -4,6 +4,7 @@ from pynput.keyboard import Key
 from ui.definitions.container import Container
 from ui.definitions.interactible import InteractionControl
 from ui.definitions.position import Position
+from ui.definitions.utils import Utils
 
 class Button(Container):
     def __init__(self, position: Position = None, configs: Dict[str, Any] = None, on_press: Callable = None) -> None:
@@ -18,8 +19,8 @@ class Button(Container):
             return []
 
         if self.__interacting:   
-            result[0] = '\033[38;5;10m' + result[0]
-            result[-1] = result[-1] + '\033[38;5;15m'
+            result[0] = Utils.set_green(result[0], set_white_after=False)
+            result[-1] = Utils.set_white_after(result[-1])
         
         return result
 

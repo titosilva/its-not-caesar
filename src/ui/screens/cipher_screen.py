@@ -1,6 +1,8 @@
 from typing import Any, List
+from ui.definitions.button import Button
 from ui.definitions.container import Container
 from ui.definitions.device import Device
+from ui.definitions.input import Input
 from ui.definitions.interactible import InteractionControl
 from ui.definitions.paragraph import Paragraph
 from ui.definitions.renderable import Renderable
@@ -27,8 +29,13 @@ class CipherScreen(Screen):
         }
         
         self.content: Renderable = (
-        Container(configs=screen_container_config) 
+        Container(configs=screen_container_config)
             % Paragraph("Key:") 
+            % Input(10, 2, on_changes=self.on_key_changes)
+            % (
+                Button(on_press=self.exit)
+                    % Paragraph("Exit")
+            )
         )
 
     def start(self):
@@ -41,3 +48,9 @@ class CipherScreen(Screen):
 
     def draw(self):
         self.__device.draw(self.content.render())
+
+    def exit(self):
+        raise NotImplementedError()
+
+    def on_key_changes(self):
+        self.draw()
