@@ -133,6 +133,7 @@ class Container(Interactible):
                 else:
                     render_line = '│' + render_line + '│'
 
+
                 current_render[line_idx] = render_line
 
         return current_render
@@ -141,11 +142,8 @@ class Container(Interactible):
         if self.__configs['flex'] == 'column':
             element.set_position(Position(len(current_render), element.get_position().col))
         if self.__configs['flex'] == 'row':
-            element.set_position(
-                Position(
-                    element.get_position().row, max(lambda line: len(line), current_render)
-                )
-            )
+            max_col = max(map(lambda line: len(Utils.remove_escape_seqs(line)), current_render)) if len(current_render) > 0 else 0 
+            element.set_position(Position(element.get_position().row, max_col))
 
         element_rendered = element.render()
         element_position = element.get_position()
@@ -163,9 +161,7 @@ class Container(Interactible):
             # space to put the element rendered line
             current_render_line += ' ' * ((len(element_rendered_line) + element_position.col) - len(current_render_line))
 
-            element_line_base = element_position.col
-            element_line_end = len(element_rendered_line) + element_line_base
-            current_render_line = current_render_line[:element_line_base] + element_rendered_line_raw + current_render_line[element_line_end:]
+            current_render_line = Utils.replace_keeping_escape_seqs(current_render_line, element_rendered_line_raw, element_position.col)
             current_render[line_idx + element_position.row] = current_render_line
 
         return current_render

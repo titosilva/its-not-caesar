@@ -4,7 +4,7 @@ from ui.definitions.container import Container
 from ui.definitions.device import Device
 from ui.definitions.input import Input
 from ui.definitions.interactible import InteractionControl
-from ui.definitions.paragraph import Paragraph
+from ui.definitions.paragraph import Margin, Paragraph
 from ui.definitions.renderable import Renderable
 from ui.definitions.screen import Screen
 
@@ -23,18 +23,27 @@ class CipherScreen(Screen):
         screen_container_config = {
             'border': True, 
             'height': screen_size[0], 
-            'width': screen_size[1], 
+            'width': screen_size[1],
             'vertical-align': 'center', 
             'horizontal-align': 'center'
         }
         
         self.content: Renderable = (
-        Container(configs=screen_container_config)
-            % Paragraph("Key:") 
-            % Input(10, 2, on_changes=self.on_key_changes)
+            Container(configs=screen_container_config) 
             % (
-                Button(on_press=self.exit)
+                Container(configs={
+                    'flex': 'row',
+                    'height': screen_size[0] - 2,
+                    'width': screen_size[1] - 2,
+                })
+                % Paragraph("Key:") 
+                % Margin()
+                % Input(10, 2, on_changes=self.on_key_changes)
+                % Margin()
+                % (
+                    Button(on_press=self.exit)
                     % Paragraph("Exit")
+                )
             )
         )
 

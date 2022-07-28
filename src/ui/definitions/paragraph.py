@@ -16,3 +16,7 @@ class Paragraph(Renderable):
 class Break(Paragraph):
     def __init__(self, position: Position = None) -> None:
         super().__init__('', position)
+
+class Margin(Paragraph):
+    def __init__(self, size: int = 1, position: Position = None) -> None:
+        super().__init__(' ' * size, position)
