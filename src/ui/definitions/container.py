@@ -223,7 +223,7 @@ class Container(Interactible):
         
         if next_element is None:
             if self._parent is not None:
-                control.pass_control(self._parent, key_to_handle=key)
+                control.pass_control(self._parent)
                 self.__interacting_element = None
             elif self.__interacting_element is not None:
                 control.pass_control(self.__interacting_element)
@@ -241,9 +241,12 @@ class Container(Interactible):
 
         if self.__interacting_element is None:
             self.__interacting_element = interactibles[0]
+            control.key_to_handle = None
             control.pass_control(self.__interacting_element)
             return
 
         if control.key_to_handle is not None:
-            self.handle_key(control.key_to_handle, control)
+            key_to_handle = control.key_to_handle
+            control.key_to_handle = None
+            self.handle_key(key_to_handle, control)
         
