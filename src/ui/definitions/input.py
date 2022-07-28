@@ -15,6 +15,7 @@ class Input(Interactible):
         self.width = width
         self.height = height
         self.__content = ''
+        self.__interacting = False
 
     def render(self) -> List[str]:
         has_border = True if self.height > 2 else False
