@@ -1,3 +1,4 @@
+from distutils.command.config import config
 from typing import Any, List
 from ui.definitions.button import Button
 from ui.definitions.container import Container
@@ -28,24 +29,50 @@ class CipherScreen(Screen):
             'horizontal-align': 'center'
         }
         
-        self.content: Renderable = (
-            Container(configs=screen_container_config) 
+        screen_container = Container(configs=screen_container_config)
+
+        key_container = (
+            Container(configs={
+                'flex': 'row',
+                'height': 1,
+                'width': screen_size[1] - 2,
+            })
+            % Paragraph("Key:") 
+            % Margin()
+            % Input(screen_size[1] - 13, 1, on_changes=self.on_key_changes)
+            % Margin()
             % (
-                Container(configs={
-                    'flex': 'row',
-                    'height': screen_size[0] - 2,
-                    'width': screen_size[1] - 2,
-                })
-                % Paragraph("Key:") 
-                % Margin()
-                % Input(10, 2, on_changes=self.on_key_changes)
-                % Margin()
-                % (
-                    Button(on_press=self.exit)
-                    % Paragraph("Exit")
-                )
+                Button(on_press=self.exit)
+                % Paragraph("Exit")
             )
+            % Margin()
         )
+
+        plaintext_container = (
+            Container(configs={
+                'flex': 'column',
+                'width': screen_size[1] - 2,
+                'height': (screen_size[0] - 4) // 2
+            })
+            % Paragraph("Plaintext:")
+            % Input(screen_size[1] - 2, (screen_size[0] - 4) // 2 - 1, on_changes=self.on_key_changes)
+        )
+
+        ciphertext_container = (
+            Container(configs={
+                'flex': 'column',
+                'width': screen_size[1] - 2,
+                'height': (screen_size[0] - 4) // 2
+            })
+            % Paragraph("Ciphertext:")
+            % Input(screen_size[1] - 2, (screen_size[0] - 4) // 2 - 1, on_changes=self.on_key_changes)
+        )
+
+        screen_container.add_element(key_container)
+        screen_container.add_element(ciphertext_container)
+        screen_container.add_element(plaintext_container)
+
+        self.content: Renderable = screen_container
 
     def start(self):
         self.__control.set_on_control_passed(self.draw)
