@@ -56,6 +56,15 @@ class Utils:
         return result
 
     @staticmethod
+    def set_blink(text: str, reset_after: bool = True) -> str:
+        result = '\033[33;7m' + text
+
+        if reset_after:
+            return Utils.reset_after(result)
+
+        return result
+
+    @staticmethod
     def reset_after(text: str) -> str:
         return text + '\033[0m'
 
