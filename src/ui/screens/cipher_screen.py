@@ -69,8 +69,8 @@ class CipherScreen(Screen):
         )
 
         screen_container.add_element(key_container)
-        screen_container.add_element(ciphertext_container)
         screen_container.add_element(plaintext_container)
+        screen_container.add_element(ciphertext_container)
 
         self.content: Renderable = screen_container
 

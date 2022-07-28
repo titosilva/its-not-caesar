@@ -18,9 +18,10 @@ class Button(Container):
         if len(result) == 0:
             return []
 
+        result = list(map(lambda l: Utils.set_underline(l), result))
         if self.__interacting:   
-            result[0] = Utils.set_green(result[0], set_white_after=False)
-            result[-1] = Utils.set_white_after(result[-1])
+            result[0] = Utils.set_green(result[0], reset_after=False)
+            result[-1] = Utils.reset_after(result[-1])
         
         return result
 

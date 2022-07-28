@@ -40,15 +40,24 @@ class Utils:
         return final_text
 
     @staticmethod
-    def set_green(text: str, set_white_after: bool = True) -> str:
-        if set_white_after:
-            return Utils.set_white_after('\033[38;5;10m' + text)
+    def set_green(text: str, reset_after: bool = True) -> str:
+        if reset_after:
+            return Utils.reset_after('\033[38;5;10m' + text)
 
         return '\033[38;5;10m' + text
 
     @staticmethod
-    def set_white_after(text: str) -> str:
-        return text + '\033[38;5;15m'
+    def set_underline(text: str, reset_after: bool = True) -> str:
+        result = '\033[4m' + text
+
+        if reset_after:
+            return Utils.reset_after(result)
+
+        return result
+
+    @staticmethod
+    def reset_after(text: str) -> str:
+        return text + '\033[0m'
 
     @staticmethod
     def key_to_char(key: Union[Key, KeyCode]):

@@ -31,9 +31,8 @@ class Input(Interactible):
         })
 
         if len(text_content) >= text_width * text_height:
-            if self.__interacting:
-                text_content = text_content[1:]
-
+            # Add space for '_'
+            text_content = text_content[1:]
             text_content = '…' + text_content[1:]
 
         row = 0
