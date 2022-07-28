@@ -42,7 +42,7 @@ class Input(Interactible):
 
             if limits[0] <= len(text_content) and limits[1] > len(text_content):
                 if self.__interacting:
-                    line_text += Utils.set_blink(Utils.set_green('_'))
+                    line_text += Utils.set_inverted(Utils.set_green('_'))
                 else:
                     line_text += '_'
 

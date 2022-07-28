@@ -56,7 +56,7 @@ class Utils:
         return result
 
     @staticmethod
-    def set_blink(text: str, reset_after: bool = True) -> str:
+    def set_inverted(text: str, reset_after: bool = True) -> str:
         result = '\033[33;7m' + text
 
         if reset_after:
