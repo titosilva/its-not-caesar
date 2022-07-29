@@ -1,5 +1,5 @@
-from distutils.command.config import config
 from typing import Any, List
+from crypto.algorithms.vigenere import VigenereCipher
 from ui.definitions.button import Button
 from ui.definitions.container import Container
 from ui.definitions.device import Device
@@ -30,6 +30,9 @@ class CipherScreen(Screen):
         }
         
         screen_container = Container(configs=screen_container_config)
+        self.key_input = Input(screen_size[1] - 13, 1, on_changes=self.on_key_changes)
+        self.plaintext_input = Input(screen_size[1] - 2, (screen_size[0] - 4) // 2 - 1, on_changes=self.on_plaintext_changes)
+        self.ciphertext_input = Input(screen_size[1] - 2, (screen_size[0] - 4) // 2 - 1, on_changes=self.on_ciphertext_changes)
 
         key_container = (
             Container(configs={
@@ -39,7 +42,7 @@ class CipherScreen(Screen):
             })
             % Paragraph("Key:") 
             % Margin()
-            % Input(screen_size[1] - 13, 1, on_changes=self.on_key_changes)
+            % self.key_input
             % Margin()
             % (
                 Button(on_press=self.exit)
@@ -55,7 +58,7 @@ class CipherScreen(Screen):
                 'height': (screen_size[0] - 4) // 2
             })
             % Paragraph("Plaintext:")
-            % Input(screen_size[1] - 2, (screen_size[0] - 4) // 2 - 1, on_changes=self.on_key_changes)
+            % self.plaintext_input
         )
 
         ciphertext_container = (
@@ -65,7 +68,7 @@ class CipherScreen(Screen):
                 'height': (screen_size[0] - 4) // 2
             })
             % Paragraph("Ciphertext:")
-            % Input(screen_size[1] - 2, (screen_size[0] - 4) // 2 - 1, on_changes=self.on_key_changes)
+            % self.ciphertext_input
         )
 
         screen_container.add_element(key_container)
@@ -89,4 +92,25 @@ class CipherScreen(Screen):
         raise NotImplementedError()
 
     def on_key_changes(self):
+        algorithm = VigenereCipher(self.key_input.get_content())
+        plaintext = self.plaintext_input.get_content()
+        ciphertext = algorithm(plaintext)
+        self.ciphertext_input.set_content(ciphertext)
+
+        self.draw()
+
+    def on_plaintext_changes(self):
+        algorithm = VigenereCipher(self.key_input.get_content())
+        plaintext = self.plaintext_input.get_content()
+        ciphertext = algorithm(plaintext)
+        self.ciphertext_input.set_content(ciphertext)
+        
+        self.draw()
+
+    def on_ciphertext_changes(self):
+        algorithm = VigenereCipher(self.key_input.get_content())
+        ciphertext = self.ciphertext_input.get_content()
+        plaintext = algorithm(ciphertext, mode='d')
+        self.plaintext_input.set_content(plaintext)        
+
         self.draw()
