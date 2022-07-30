@@ -10,10 +10,13 @@ from ui.definitions.paragraph import Margin, Paragraph
 from ui.definitions.renderable import Renderable
 from ui.definitions.screen import Screen
 from ui.definitions.scroll_menu import ScrollMenu
+from ui.definitions.textview import TextView
 
 class AnalysisScreen(Screen):
-    def __init__(self, context: Any, language: LanguageDescription) -> None:
+    def __init__(self, context: Any, language: LanguageDescription, ciphertext: str) -> None:
         self.__language = language
+        self.__ciphertext = ciphertext
+
         device: Device = context.get_device()
         control: InteractionControl = context.get_control()
 
@@ -34,24 +37,22 @@ class AnalysisScreen(Screen):
         })
 
         key_lengths = list(range(5, 20))
-        self.key_length_menu = ScrollMenu(key_lengths, on_scroll=self.on_key_lenght_changed)
+        self.key_length_menu = ScrollMenu(key_lengths, on_scroll=self.on_key_length_changed)
         key_control.add_element(Paragraph("Key length: "))
         key_control.add_element(self.key_length_menu)
         key_control.add_element(Margin())
         key_control.add_element(Paragraph("Key value: "))
-
         self.key_control = key_control
         self.key_char_scrolls = list()
-
         self.key_chars = Container(configs={
             'flex': 'row',
         }, elements=self.key_char_scrolls)
-
         self.regenerate_scroll_inputs()
-
         self.key_control.add_element(self.key_chars)
-        
         screen_container.add_element(self.key_control)
+
+        screen_container.add_element(Paragraph("Deciphered text:"))
+        screen_container.add_element(TextView(self.get_deciphered_text, screen_size[1]-2, screen_size[0] - 10))
         self.content: Renderable = screen_container
 
     def regenerate_scroll_inputs(self):
@@ -59,14 +60,20 @@ class AnalysisScreen(Screen):
 
         for i in range(0, self.key_length_menu.current_option):
             self.key_char_scrolls.append(Margin())
-            self.key_char_scrolls.append(ScrollMenu(self.__language.get_alphabet(), on_scroll=self.on_scroll))
+            self.key_char_scrolls.append(ScrollMenu(self.__language.get_alphabet(), on_scroll=self.on_key_char_changed))
 
-    def on_key_lenght_changed(self):
+    def on_key_length_changed(self):
         self.regenerate_scroll_inputs()
         self.draw()
 
-    def on_scroll(self):
+    def on_key_char_changed(self):
         self.draw()
+
+    def get_deciphered_text(self):
+        scrolls = filter(lambda e: isinstance(e, ScrollMenu), self.key_char_scrolls)
+        key = ''.join(map(lambda scroll: scroll.current_option, scrolls))
+        algorithm = VigenereCipher(alphabet=self.__language.get_alphabet())
+        return algorithm(self.__ciphertext, key, 'd')
 
     def start(self):
         self.__control.set_on_control_passed(self.draw)

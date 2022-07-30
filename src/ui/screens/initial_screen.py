@@ -56,7 +56,7 @@ class InitialScreen(Screen):
         self.__context.set_screen(CipherScreen(self.__context))
 
     def go_to_analysis(self):
-        self.__context.set_screen(AnalysisScreen(self.__context, EnglishLanguage()))
+        self.__context.set_screen(AnalysisScreen(self.__context, EnglishLanguage(), 'Tikv ms b upelm vhwt, J\'f vey'))
 
     def draw(self):
         self.__device.draw(self.content.render())
