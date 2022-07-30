@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from this import d
 from typing import List
 from ui.definitions.device import Device
 
