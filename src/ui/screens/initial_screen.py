@@ -10,6 +10,7 @@ from ui.definitions.paragraph import Break, Paragraph
 from ui.definitions.context import UIContext
 from ui.screens.analysis_screen import AnalysisScreen
 from ui.screens.cipher_screen import CipherScreen
+from ui.screens.ciphertext_file_screen import CiphertextFileScreen
 
 class InitialScreen(Screen):
     def __init__(self, context: UIContext) -> None:
@@ -37,10 +38,10 @@ class InitialScreen(Screen):
             % Paragraph("What would you like to do, my friend?")
             % Break() % (
                 Button(on_press=self.go_to_cipher)
-                    % Paragraph("Cipher/decipher")
+                    % Paragraph("Cipher/decipher typed text")
             ) % (
                 Button(on_press=self.go_to_analysis)
-                    % Paragraph("Crack a ciphertext")
+                    % Paragraph("Crack a ciphertext from file")
             )
         )
             
@@ -56,7 +57,7 @@ class InitialScreen(Screen):
         self.__context.set_screen(CipherScreen(self.__context))
 
     def go_to_analysis(self):
-        self.__context.set_screen(AnalysisScreen(self.__context, EnglishLanguage(), 'Tikv ms b upelm vhwt, J\'f vey'))
+        self.__context.set_screen(CiphertextFileScreen(self.__context))
 
     def draw(self):
         self.__device.draw(self.content.render())

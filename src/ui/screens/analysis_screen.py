@@ -1,6 +1,7 @@
 from typing import Any, List
 from crypto.algorithms.vigenere import VigenereCipher
 from crypto.languages.description import LanguageDescription
+from crypto.languages.english import EnglishLanguage
 from ui.definitions.button import Button
 from ui.definitions.container import Container
 from ui.definitions.device import Device
@@ -13,7 +14,8 @@ from ui.definitions.scroll_menu import ScrollMenu
 from ui.definitions.textview import TextView
 
 class AnalysisScreen(Screen):
-    def __init__(self, context: Any, language: LanguageDescription, ciphertext: str) -> None:
+    def __init__(self, context: Any, ciphertext: str) -> None:
+        language = EnglishLanguage()
         self.__language = language
         self.__ciphertext = ciphertext
 
@@ -52,7 +54,7 @@ class AnalysisScreen(Screen):
         screen_container.add_element(self.key_control)
 
         screen_container.add_element(Paragraph("Deciphered text:"))
-        screen_container.add_element(TextView(self.get_deciphered_text, screen_size[1]-2, screen_size[0] - 10))
+        screen_container.add_element(TextView(self.get_deciphered_text, screen_size[1]-2, screen_size[0] - 6))
         self.content: Renderable = screen_container
 
     def regenerate_scroll_inputs(self):

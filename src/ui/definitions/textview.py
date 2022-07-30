@@ -29,9 +29,21 @@ class TextView(Renderable):
         max_displayed = self.__width * self.__height
         content = Utils.remove_escape_seqs(content)[:max_displayed]
         chars_displayed = 0
-        while chars_displayed < max_displayed:
-            subcontainer.add_element(Paragraph(content[chars_displayed:chars_displayed+self.__width]))
-            chars_displayed += self.__width
+        paragraphs = 0
+        while chars_displayed < max_displayed and paragraphs <= self.__height:
+            subcontent = content[chars_displayed:chars_displayed+self.__width]
+
+            if '\n' in subcontent:
+                line_break_index = subcontent.index('\n')
+                subcontent = subcontent[:line_break_index]
+                subcontent_padded = subcontent + ' ' * (self.__width - len(subcontent)) 
+                subcontainer.add_element(Paragraph(subcontent_padded))
+                chars_displayed += len(subcontent) + 2
+            else:
+                subcontainer.add_element(Paragraph(subcontent))
+                chars_displayed += len(subcontent)
+
+            paragraphs += 1
 
         return subcontainer.render()
 
