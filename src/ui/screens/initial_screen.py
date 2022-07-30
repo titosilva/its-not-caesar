@@ -1,4 +1,5 @@
 from typing import Any, List
+from crypto.languages.english import EnglishLanguage
 from ui.definitions.interactible import InteractionControl
 from ui.definitions.renderable import Renderable
 from ui.definitions.screen import Screen
@@ -7,6 +8,7 @@ from ui.definitions.container import Container
 from ui.definitions.device import Device
 from ui.definitions.paragraph import Break, Paragraph
 from ui.definitions.context import UIContext
+from ui.screens.analysis_screen import AnalysisScreen
 from ui.screens.cipher_screen import CipherScreen
 
 class InitialScreen(Screen):
@@ -54,8 +56,7 @@ class InitialScreen(Screen):
         self.__context.set_screen(CipherScreen(self.__context))
 
     def go_to_analysis(self):
-        self.__other_button_content += 1
-        self.draw()
+        self.__context.set_screen(AnalysisScreen(self.__context, EnglishLanguage()))
 
     def draw(self):
         self.__device.draw(self.content.render())

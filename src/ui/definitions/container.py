@@ -7,7 +7,7 @@ from ui.definitions.renderable import Renderable
 from ui.definitions.utils import Utils
 
 class Container(Interactible):
-    def __init__(self, position: Position = None, configs: Dict[str, Any] = None) -> None:
+    def __init__(self, position: Position = None, configs: Dict[str, Any] = None, elements: List[Renderable] = None) -> None:
         super().__init__(position)
 
         self.__configs = configs if configs is not None else dict()
@@ -35,7 +35,11 @@ class Container(Interactible):
             if config_key not in self.__configs:
                 self.__configs[config_key] = default_configs[config_key]
 
-        self.__elements_depth_ordered = list()
+        self.__elements_depth_ordered = list() if elements is None else elements
+        self.__elements_depth_ordered.sort(key=lambda e: e.get_position().depth)
+        for element in self.__elements_depth_ordered:
+            element.set_parent(self)
+
         self.__interacting_element = None
     
     def add_element(self, element: Renderable) -> Any:
@@ -226,12 +230,14 @@ class Container(Interactible):
                 self.__interacting_element = None
                 control.pass_control(self._parent)
             elif self.__interacting_element is not None:
+                self.__interacting_element.set_parent(self)
                 control.pass_control(self.__interacting_element)
                 
             return
 
         control.key_to_handle = None
         self.__interacting_element = next_element
+        self.__interacting_element.set_parent(self)
         control.pass_control(next_element)
 
     def take_control(self, control: InteractionControl):
@@ -242,6 +248,7 @@ class Container(Interactible):
 
         if self.__interacting_element is None:
             self.__interacting_element = interactibles[0]
+            self.__interacting_element.set_parent(self)
             control.key_to_handle = None
             control.pass_control(self.__interacting_element)
             return
@@ -249,4 +256,3 @@ class Container(Interactible):
         if control.key_to_handle is not None:
             key_to_handle = control.key_to_handle
             self.handle_key(key_to_handle, control)
-        
