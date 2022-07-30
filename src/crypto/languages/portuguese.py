@@ -1,8 +1,11 @@
 from typing import Dict, List
-from languages.description import LanguageDescription
-from utils import strip_accents
+from crypto.languages.description import LanguageDescription
+from crypto.utils import strip_accents
 
 class PortugueseLanguage(LanguageDescription):
+    def get_name(self) -> str:
+        return 'Portuguese'
+
     def get_alphabet(self) -> List[str]:
         return 'abcdefghijklmnopqrstuvwxyz'
 

@@ -3,6 +3,10 @@ from typing import Dict, List
 
 class LanguageDescription(ABC): 
     @abstractmethod
+    def get_name(self) -> str:
+        raise NotImplementedError()
+
+    @abstractmethod
     def get_alphabet_frequencies(self) -> Dict[str, float]:
         raise NotImplementedError()
 
