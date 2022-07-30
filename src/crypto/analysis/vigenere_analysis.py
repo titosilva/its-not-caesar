@@ -79,14 +79,14 @@ class VigenereAnalyser:
 
         return key
 
-    def get_slices_characteristics_by_key(self, ciphertext: str, language: LanguageDescription, key_length: int = None):
+    def get_slices_characteristics_diff_by_key(self, ciphertext: str, language: LanguageDescription, key_length: int = None) -> List[Dict[str, float]]:
         helper_analyser = StatisticalAnalyser()
         language_alphabet = language.get_alphabet()
         language_frequencies = language.get_alphabet_frequencies()
         language_characteristic = language.compute_characteristic()
         prepared_text = language.remove_nonalphabet_chars(ciphertext)
 
-        slices_characteristics_by_key = []
+        slices_characteristics_diff_by_key = []
 
         for slice_base in range(0, key_length):
             slice = prepared_text[slice_base::key_length]
@@ -94,19 +94,19 @@ class VigenereAnalyser:
             alphabet_counts = helper_analyser.count_alphabet_on_text(slice, language_alphabet)
             total_count = len(slice)
             test_alphabet = list(language_alphabet)
-            slice_characteristics_by_key = dict()
+            slice_characteristics_diff_by_key = dict()
 
             for possible_key_char_idx in range(0, len(language_alphabet)):
                 characteristic = sum(language_frequencies[language_alphabet[j]] * alphabet_counts[test_alphabet[j]] / total_count for j in range(0, len(language_alphabet)))
-                slice_characteristics_by_key[language_alphabet[possible_key_char_idx]] = characteristic - language_characteristic
+                slice_characteristics_diff_by_key[language_alphabet[possible_key_char_idx]] = characteristic - language_characteristic
 
                 last_element = test_alphabet[-1]
                 test_alphabet[1:] = test_alphabet[0:-1]
                 test_alphabet[0] = last_element
 
-            slices_characteristics_by_key.append(slice_characteristics_by_key)
+            slices_characteristics_diff_by_key.append(slice_characteristics_diff_by_key)
 
-        return slices_characteristics_by_key
+        return slices_characteristics_diff_by_key
 
 
     def get_most_probable_key_v2(self, ciphertext: str, language: LanguageDescription, key_length: int = None):
