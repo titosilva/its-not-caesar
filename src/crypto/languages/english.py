@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List
 from crypto.languages.description import LanguageDescription
 from crypto.utils import strip_accents
@@ -44,4 +45,15 @@ class EnglishLanguage(LanguageDescription):
             'y': 0.017779,
             'z': 0.002722,
         }
+
+    def get_digram_frequencies(self) -> Dict[str, float]:
+        with open('./english_digrams.json') as f:
+            frequencies = json.load(f)['frequencies']
+
+            result = dict()
+            for frequency in frequencies:
+                result[frequency[0]] = frequency[1]
+
+            return result
+
         
