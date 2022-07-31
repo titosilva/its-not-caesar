@@ -15,6 +15,9 @@ class ScrollMenu(Interactible):
         self.current_position = 0
         self.__interacting = False
 
+    def reset(self):
+        self.current_position = 0
+
     def set_parent(self, parent):
         return super().set_parent(parent)
 
@@ -54,6 +57,10 @@ class ScrollMenu(Interactible):
         if key == Key.up:
             if self.current_position > 0:
                 self.current_position -= 1
+            else:
+                self.__interacting = False
+                control.pass_control(self._parent)
+                return
 
             if self.__on_scroll is not None:
                 self.__on_scroll()
@@ -61,6 +68,10 @@ class ScrollMenu(Interactible):
         elif key == Key.down:
             if self.current_position < len(self.options) - 1:
                 self.current_position += 1
+            else:
+                self.__interacting = False
+                control.pass_control(self._parent)
+                return
 
             if self.__on_scroll is not None:
                 self.__on_scroll()

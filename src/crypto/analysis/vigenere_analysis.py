@@ -9,13 +9,9 @@ class VigenereAnalyser:
         pass
 
     def detect_language(self, ciphertext: str, possible_languages: List[LanguageDescription], max_key_length: int = None) -> LanguageDescription:
-        helper_analyser = StatisticalAnalyser()
-
         result = None
         result_avg = None
         for language in possible_languages:
-            language_characteristic = language.compute_characteristic()
-            language_alphabet = language.get_alphabet()
             prepared_text = language.remove_nonalphabet_chars(ciphertext)
 
             max_possible_key_length = len(prepared_text)
