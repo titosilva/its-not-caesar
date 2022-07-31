@@ -46,16 +46,3 @@ class EnglishLanguage(LanguageDescription):
             'y': 0.017779,
             'z': 0.002722,
         }
-
-    def get_digram_frequencies(self) -> Dict[str, float]:
-        english_digrams_file = os.path.join(os.path.dirname(__file__), 'english_digrams.json')
-        with open(english_digrams_file) as f:
-            frequencies = json.load(f)['frequencies']
-
-            result = dict()
-            for frequency in frequencies:
-                result[frequency[0]] = frequency[1]
-
-            return result
-
-        

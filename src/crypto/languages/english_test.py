@@ -23,7 +23,3 @@ def test_english_characteristic__should__be_close_to_expected():
 
     assert abs(expected_characteristic - real_characteristic) < 0.05
 
-def test_english_digrams_loading():
-    language = EnglishLanguage()
-    frequencies = language.get_digram_frequencies()
-    assert len(frequencies) > 0
