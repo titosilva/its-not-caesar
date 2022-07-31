@@ -9,9 +9,13 @@ class VigenereAnalyser:
         pass
 
     def detect_language(self, ciphertext: str, possible_languages: List[LanguageDescription], max_key_length: int = None) -> LanguageDescription:
+        helper_analyser = StatisticalAnalyser()
+
         result = None
         result_avg = None
         for language in possible_languages:
+            language_characteristic = language.compute_characteristic()
+            language_alphabet = language.get_alphabet()
             prepared_text = language.remove_nonalphabet_chars(ciphertext)
 
             max_possible_key_length = len(prepared_text)
@@ -22,7 +26,7 @@ class VigenereAnalyser:
             for possible_key_length in range(1, max_possible_key_length):
                 slices_key_char_diffs = self.get_slices_characteristics_diff_by_key(ciphertext, language, possible_key_length)
                 for slice_key_char_diffs in slices_key_char_diffs:
-                    min_slice_key_char_diff = min(slice_key_char_diffs.values())
+                    min_slice_key_char_diff = min(map(lambda diff: abs(diff), slice_key_char_diffs.values()))
                     if min_key_char_diff is None or min_key_char_diff > min_slice_key_char_diff:
                         min_key_char_diff = min_slice_key_char_diff
 
