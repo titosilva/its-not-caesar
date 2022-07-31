@@ -100,6 +100,10 @@ class VigenereAnalyser:
                 characteristic = sum(language_frequencies[language_alphabet[j]] * alphabet_counts[test_alphabet[j]] / total_count for j in range(0, len(language_alphabet)))
                 slice_characteristics_diff_by_key[language_alphabet[possible_key_char_idx]] = characteristic - language_characteristic
 
+                first_element = test_alphabet[0]
+                test_alphabet = test_alphabet[1:]
+                test_alphabet += first_element
+
             slices_characteristics_diff_by_key.append(slice_characteristics_diff_by_key)
 
         lang_digram_characteristic = language.compute_digram_characteristic()
