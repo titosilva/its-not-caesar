@@ -25,3 +25,9 @@ class LanguageDescription(ABC):
         freq = self.get_alphabet_frequencies()
         return sum(map(lambda p: p ** 2, freq.values()))
 
+    def compute_digram_characteristic(self) -> float:
+        freq = self.get_digram_frequencies()
+        if freq is None:
+            return None
+        return sum(map(lambda p: p ** 2, freq.values()))
+
