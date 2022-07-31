@@ -8,7 +8,7 @@ class VigenereAnalyser:
     def __init__(self) -> None:
         pass
 
-    def detect_language(self, ciphertext: str, possible_languages: List[LanguageDescription], max_characteristic_diff: float = 0.01, max_slice_characteristic_std_deviation: float = 0.001, max_key_length: int = None) -> LanguageDescription:
+    def detect_language(self, ciphertext: str, possible_languages: List[LanguageDescription], max_key_length: int = None) -> LanguageDescription:
         helper_analyser = StatisticalAnalyser()
 
         result = None
@@ -22,15 +22,19 @@ class VigenereAnalyser:
             if max_key_length is not None:
                 max_possible_key_length = min(max_possible_key_length, max_key_length)
 
+            keys_sum = 0
             for possible_key_length in range(1, max_possible_key_length):
                 slices_counts = helper_analyser.count_alphabet_by_text_slice(prepared_text, language_alphabet, possible_key_length)
                 slices_characteristics = list(map(lambda sc: helper_analyser.compute_characteristic_from_counts(sc.values()), slices_counts))
                 slices_lang_diffs = list(map(lambda sc: abs(sc - language_characteristic), slices_characteristics))
-                avg = helper_analyser.compute_average_value(slices_lang_diffs)
+                slices_avg = helper_analyser.compute_average_value(slices_lang_diffs)
+                keys_sum += slices_avg
+            keys_avg = keys_sum / (max_possible_key_length-1)
 
-                if result_avg is None or result_avg > avg:
-                    result_avg = avg
-                    result = language
+
+            if result_avg is None or keys_avg < result_avg:
+                result_avg = keys_avg
+                result = language
 
         return result
 

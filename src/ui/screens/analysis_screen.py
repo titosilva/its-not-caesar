@@ -17,8 +17,6 @@ from ui.definitions.textview import TextView
 
 class AnalysisScreen(Screen):
     def __init__(self, context: Any, ciphertext: str) -> None:
-        language = EnglishLanguage()
-        self.__language = language
         self.__ciphertext = ciphertext
         self.__analyser = VigenereAnalyser()
 
@@ -63,8 +61,9 @@ class AnalysisScreen(Screen):
         self.content: Renderable = screen_container
 
     def detect_language_and_key_lengths(self):
-        self.__detected_language = self.__analyser.detect_language(self.__ciphertext, [EnglishLanguage(), PortugueseLanguage()], max_key_length=30)
-        key_length_characteristics = self.__analyser.compute_avg_characteristic_diff_by_key_length(self.__ciphertext, self.__detected_language, max_key_length=30)
+        self.__detected_language = self.__analyser.detect_language(self.__ciphertext, [EnglishLanguage(), PortugueseLanguage()], max_key_length=20)
+        # self.__detected_language = PortugueseLanguage()
+        key_length_characteristics = self.__analyser.compute_avg_characteristic_diff_by_key_length(self.__ciphertext, self.__detected_language, max_key_length=20)
         self.key_lengths = list(key_length_characteristics.keys())
         self.key_lengths.sort(key=lambda k: key_length_characteristics[k])
 
@@ -91,7 +90,7 @@ class AnalysisScreen(Screen):
     def get_deciphered_text(self):
         scrolls = filter(lambda e: isinstance(e, ScrollMenu), self.key_char_scrolls)
         key = ''.join(map(lambda scroll: scroll.current_option, scrolls))
-        algorithm = VigenereCipher(alphabet=self.__language.get_alphabet())
+        algorithm = VigenereCipher(alphabet=self.__detected_language.get_alphabet())
         return algorithm(self.__ciphertext, key, 'd')
 
     def start(self):
