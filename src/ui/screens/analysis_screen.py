@@ -63,6 +63,8 @@ class AnalysisScreen(Screen):
         self.key_char_scrolls = list()
         self.key_chars = Container(configs={
             'flex': 'row',
+            'height': 5,
+            'width': screen_size[1] - 30,
         }, elements=self.key_char_scrolls)
         self.regenerate_scroll_inputs()
         self.key_control.add_element(self.key_chars)

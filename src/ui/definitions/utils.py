@@ -21,7 +21,7 @@ class Utils:
             return final_text
 
         while idx < len(original_text):
-            match = re.match(r'\033[\[\;\d]*m', original_text[idx:])
+            match = re.match(r'^\033[\[\;\d]+m', original_text[idx:])
 
             if match is None:
                 common_chars_read += 1
@@ -34,8 +34,9 @@ class Utils:
                 final_text += original_text[idx]
                 idx += 1
             else:
-                idx += len(match.string)
-                final_text += match.string
+                matched_text = match.group()
+                idx += len(matched_text)
+                final_text += matched_text
 
         return final_text
 

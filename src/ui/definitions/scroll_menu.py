@@ -50,7 +50,8 @@ class ScrollMenu(Interactible):
         subelement.add_element(Paragraph('▼' * len(option_content) if position < len(self.options) - 1 else whitespaces))
         subelement.add_element(Paragraph(str(self.options[self.current_position + 1])[:len(option_content)] if position < len(self.options) - 1 else whitespaces))
 
-        return subelement.render()
+        rendered = subelement.render()
+        return rendered
 
 
     def handle_key(self, key: Key, control: InteractionControl):
