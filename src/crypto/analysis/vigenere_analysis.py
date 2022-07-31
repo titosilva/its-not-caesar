@@ -9,31 +9,25 @@ class VigenereAnalyser:
         pass
 
     def detect_language(self, ciphertext: str, possible_languages: List[LanguageDescription], max_key_length: int = None) -> LanguageDescription:
-        helper_analyser = StatisticalAnalyser()
-
         result = None
         result_avg = None
         for language in possible_languages:
-            language_characteristic = language.compute_characteristic()
-            language_alphabet = language.get_alphabet()
             prepared_text = language.remove_nonalphabet_chars(ciphertext)
 
             max_possible_key_length = len(prepared_text)
             if max_key_length is not None:
                 max_possible_key_length = min(max_possible_key_length, max_key_length)
 
-            keys_sum = 0
+            min_key_char_diff = None
             for possible_key_length in range(1, max_possible_key_length):
-                slices_counts = helper_analyser.count_alphabet_by_text_slice(prepared_text, language_alphabet, possible_key_length)
-                slices_characteristics = list(map(lambda sc: helper_analyser.compute_characteristic_from_counts(sc.values()), slices_counts))
-                slices_lang_diffs = list(map(lambda sc: abs(sc - language_characteristic), slices_characteristics))
-                slices_avg = helper_analyser.compute_average_value(slices_lang_diffs)
-                keys_sum += slices_avg
-            keys_avg = keys_sum / (max_possible_key_length-1)
+                slices_key_char_diffs = self.get_slices_characteristics_diff_by_key(ciphertext, language, possible_key_length)
+                for slice_key_char_diffs in slices_key_char_diffs:
+                    min_slice_key_char_diff = min(slice_key_char_diffs.values())
+                    if min_key_char_diff is None or min_key_char_diff > min_slice_key_char_diff:
+                        min_key_char_diff = min_slice_key_char_diff
 
-
-            if result_avg is None or keys_avg < result_avg:
-                result_avg = keys_avg
+            if result_avg is None or min_key_char_diff < result_avg:
+                result_avg = min_key_char_diff
                 result = language
 
         return result
