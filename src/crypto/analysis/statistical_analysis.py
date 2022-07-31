@@ -30,9 +30,24 @@ class StatisticalAnalyser:
 
         return result
 
+    def counts_to_frequencies(self, counts: Dict[str, int]) -> Dict[str, float]:
+        result = dict()
+        total = sum(counts.values())
+        for key in counts.keys():
+            result[key] = counts[key] / total
+        return result
+
     def compute_characteristic_from_counts(self, counts: List[int]) -> float:
         total = sum(counts)
         return sum(map(lambda count: (count / total) ** 2, counts))
+
+    def compute_characteristic_on_language(self, frequencies: Dict[str, float], language_frequencies: Dict[str, float]):
+        result = dict()
+        for key in frequencies.keys():
+            if key in language_frequencies:
+                result[key] = frequencies[key] * language_frequencies[key]
+
+        return sum(result.values()) / len(result.values())
 
     def compute_average_value(self, values: List[float]) -> float:
         values_len = len(values)
@@ -42,3 +57,23 @@ class StatisticalAnalyser:
         values_len = len(values)
         values_avg = self.compute_average_value(values)
         return sqrt(sum(map(lambda value: (value - values_avg) ** 2, values)) / values_len)
+
+    def compose_characteristic_diffs(self, c1: Dict[str, float], c2: Dict[str, float]) -> Dict[str, float]:
+        result = dict()
+        
+        c2_avg = sum(c2.values())/len(c2.values())
+        for c1_key in c1.keys():
+            result[c1_key] = c1[c1_key]
+
+            if c1_key in c2:
+                c2_value = c2[c1_key]
+
+                if c2_value == 0:
+                    continue
+
+                result[c1_key] *= c2_value
+            else:
+                result[c1_key] *= c2_avg
+
+        return result
+

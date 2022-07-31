@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from crypto.algorithms.vigenere import VigenereCipher
 from crypto.analysis.statistical_analysis import StatisticalAnalyser
 from crypto.languages.description import LanguageDescription
@@ -100,13 +100,127 @@ class VigenereAnalyser:
                 characteristic = sum(language_frequencies[language_alphabet[j]] * alphabet_counts[test_alphabet[j]] / total_count for j in range(0, len(language_alphabet)))
                 slice_characteristics_diff_by_key[language_alphabet[possible_key_char_idx]] = characteristic - language_characteristic
 
-                last_element = test_alphabet[-1]
-                test_alphabet[1:] = test_alphabet[0:-1]
-                test_alphabet[0] = last_element
-
             slices_characteristics_diff_by_key.append(slice_characteristics_diff_by_key)
 
+        lang_digram_characteristic = language.compute_digram_characteristic()
+        if lang_digram_characteristic is not None:
+            digram_characteristics = self.__get_slices_composed_characteristics_diff_by_key_digrams(
+                ciphertext, language, key_length)
+            
+            for idx in range(0, len(slices_characteristics_diff_by_key)):
+                slices_characteristics_diff_by_key[idx] = \
+                    helper_analyser.compose_characteristic_diffs(
+                        slices_characteristics_diff_by_key[idx],
+                        digram_characteristics[idx]
+                    )
+
         return slices_characteristics_diff_by_key
+
+    def __get_slices_composed_characteristics_diff_by_key_digrams(self, ciphertext: str, language: LanguageDescription, key_length: int = None) -> List[Dict[str, float]]:
+        helper_analyser = StatisticalAnalyser()
+        language_alphabet = language.get_alphabet()
+        lang_digram_frequencies = language.get_digram_frequencies()
+        lang_digram_characteristic = language.compute_digram_characteristic()
+        prepared_text = language.remove_nonalphabet_chars(ciphertext)
+        algorithm = VigenereCipher()
+        
+        # Get all text slices
+        slices = list()
+        for slice_base in range(0, key_length):
+            slices.append(prepared_text[slice_base::key_length])
+
+        avg_slices_characteristics_by_key: List[Dict[str, float]] = list()
+        avg_pair_characteristics_by_keys: List[Tuple[Dict[str, float], Dict[str, float]]] = list()
+
+        # Go grouping the text slices on pairs
+        for pair_base in range(0, key_length - 1):
+            # Join the two consecutive slices
+            joined_slices = self.__join_strings_interpolating(slices[pair_base], slices[pair_base + 1])
+
+            # Test different key pairs for the joined slices
+            # computing the characteristics for each pair
+            key_1_characteristics = dict()
+            key_2_characteristics = dict()
+            for key_idx_1 in range(0, len(language_alphabet)):
+                for key_idx_2 in range(0, len(language_alphabet)):
+                    key_1 = language_alphabet[key_idx_1]
+                    key_2 = language_alphabet[key_idx_2]
+                    key_pair = key_1 + key_2
+                    deciphered_joined_slices = algorithm(joined_slices, key_pair, 'd')
+
+                    # Count all digrams on deciphered joined slices
+                    digram_count = dict()
+                    for digram_base in range(0, len(deciphered_joined_slices), 2):
+                        digram = deciphered_joined_slices[digram_base:digram_base + 2]
+
+                        if digram not in digram_count:
+                            digram_count[digram] = 0
+
+                        digram_count[digram] += 1
+                    
+                    # Convert digram count to frequencies then compute the characteristic of the key pair
+                    # characteristic = helper_analyser.compute_characteristic_from_counts(digram_count.values())
+                    digram_frequency = helper_analyser.counts_to_frequencies(digram_count)
+                    characteristic = helper_analyser.compute_characteristic_on_language(digram_frequency, lang_digram_frequencies)
+
+                    # Compute the difference with the language characteristic
+                    characteristic_diff = abs(characteristic - lang_digram_characteristic)
+
+                    # Save the characteristicc2[c1_key]
+                    if not key_1 in key_1_characteristics:
+                        key_1_characteristics[key_1] = []
+                    key_1_characteristics[key_1].append(characteristic_diff)
+
+                    if not key_2 in key_2_characteristics:
+                        key_2_characteristics[key_2] = []
+                    key_2_characteristics[key_2].append(characteristic_diff)
+
+            # Compute the average characteristic diff for key 1 and key 2
+            # for this pair base
+            key_1_avg_char_diffs = dict()
+            for key_1 in key_1_characteristics.keys():
+                char_diffs = key_1_characteristics[key_1]
+                avg_char_diff = sum(char_diffs)/len(char_diffs)
+                key_1_avg_char_diffs[key_1] = avg_char_diff
+            
+            key_2_avg_char_diffs = dict()
+            for key_2 in key_2_characteristics.keys():
+                char_diffs = key_2_characteristics[key_2]
+                avg_char_diff = sum(char_diffs)/len(char_diffs)
+                key_2_avg_char_diffs[key_1] = avg_char_diff
+
+            avg_pair_characteristics_by_keys.append((key_1_avg_char_diffs, key_2_avg_char_diffs))
+
+        # Compose the avg pair characteristics on the final result
+        for pair_base in range(0, key_length - 1):
+            pair_avg_char_diff = avg_pair_characteristics_by_keys[pair_base]
+            slice_characteristics: Dict[str, float]
+
+            if pair_base > 0:
+                previous_pair_avg_char_diff = avg_pair_characteristics_by_keys[pair_base - 1]
+                slice_characteristics = helper_analyser.compose_characteristic_diffs(
+                    pair_avg_char_diff[0], previous_pair_avg_char_diff[1])
+            else:
+                slice_characteristics = pair_avg_char_diff[0]
+
+            avg_slices_characteristics_by_key.append(slice_characteristics)
+        # Add last item
+        avg_slices_characteristics_by_key.append(avg_pair_characteristics_by_keys[-1][1])
+
+        return avg_slices_characteristics_by_key
+
+
+    def __join_strings_interpolating(self, s1: str, s2: str) -> str:
+        result = ''
+        for idx in range(0, min(len(s1), len(s2))):
+            result += f'{s1[idx]}{s2[idx]}'
+
+        if len(s1) > len(s2):
+            result += s1[len(s2):]
+        elif len(s2) > len(s1):
+            result += s2[len(s1):]
+
+        return result
 
 
     def get_most_probable_key_v2(self, ciphertext: str, language: LanguageDescription, key_length: int = None):
